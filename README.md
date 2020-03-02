@@ -1,7 +1,7 @@
 # toml-cli
 
 ## Build
-`` 
+```
 go build
 ```
 
