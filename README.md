@@ -44,6 +44,13 @@ $ toml-cli get file.toml
 ```
 > NOTE: this also lint the file
 
+#### Get keys only
+```
+$ toml-cli get-keys file.toml some
+where time
+```
+> NOTE: returns space separated keys under `some`
+
 #### Setting value
 ```
 $ toml-cli set file.toml some.where.key newvalue

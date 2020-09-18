@@ -16,9 +16,10 @@ func main() {
 		_, _ = fmt.Fprintln(os.Stderr, "Usage: toml CMD FILE [QUERY] [VALUE]")
 		_, _ = fmt.Fprintln(os.Stderr, "")
 		_, _ = fmt.Fprintln(os.Stderr, "Commands:")
-		_, _ = fmt.Fprintln(os.Stderr, "lint", "output linted file")
-		_, _ = fmt.Fprintln(os.Stderr, "get ", "get query result")
-		_, _ = fmt.Fprintln(os.Stderr, "set ", "set value in toml file and save")
+		_, _ = fmt.Fprintln(os.Stderr, "lint    ", "output linted file")
+		_, _ = fmt.Fprintln(os.Stderr, "get     ", "get query result")
+		_, _ = fmt.Fprintln(os.Stderr, "get-keys", "get keys instead of values from query result")
+		_, _ = fmt.Fprintln(os.Stderr, "set     ", "set value in toml file and save")
 	}
 	flag.Parse()
 
@@ -42,7 +43,13 @@ func main() {
 		path := getPath(query)
 		value := data.GetPath(path)
 		if value != nil {
-				fmt.Print(value)
+			fmt.Print(value)
+		}
+	} else if cmd == "get-keys" && flag.NArg() <= 3 {
+		path := getPath(query)
+		value, ok := data.GetPath(path).(*toml.Tree)
+		if ok {
+			fmt.Println(strings.Join(value.Keys()[:], " "))
 		}
 	} else if cmd == "lint" && flag.NArg() == 2 {
 		err := writeTomlFile(filename, data)
