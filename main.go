@@ -20,6 +20,7 @@ func main() {
 		_, _ = fmt.Fprintln(os.Stderr, "get     ", "get query result")
 		_, _ = fmt.Fprintln(os.Stderr, "get-keys", "get keys instead of values from query result")
 		_, _ = fmt.Fprintln(os.Stderr, "set     ", "set value in toml file and save")
+		_, _ = fmt.Fprintln(os.Stderr, "delete  ", "delete key in toml file and save")
 	}
 	flag.Parse()
 
@@ -45,16 +46,30 @@ func main() {
 		if value != nil {
 			fmt.Print(value)
 		}
+	} else if cmd == "delete" && flag.NArg() <= 3 {
+		path := getPath(query)
+		derr := data.DeletePath(path)
+		if derr != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(-1)
+		}
+		werr := writeTomlFile(filename, data)
+		if werr != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(-1)
+		}
 	} else if cmd == "get-keys" && flag.NArg() <= 3 {
 		path := getPath(query)
 		value, ok := data.GetPath(path).(*toml.Tree)
 		if ok {
-			fmt.Println(strings.Join(value.Keys()[:], " "))
+			for _, key := range value.Keys() {
+				fmt.Println(key)
+			}
 		}
 	} else if cmd == "lint" && flag.NArg() == 2 {
 		err := writeTomlFile(filename, data)
 		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err.Error())
+			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(-1)
 		}
 	} else if cmd == "set" && flag.NArg() == 4 {
@@ -62,7 +77,7 @@ func main() {
 		data.SetPath(path, value)
 		err := writeTomlFile(filename, data)
 		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err.Error())
+			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(-1)
 		}
 	} else {
