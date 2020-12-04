@@ -1,0 +1,24 @@
+before:
+  hooks:
+    - go mod download
+builds:
+  - id: toml
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    binary: toml
+    goarch:
+      - amd64
+      - arm64
+archives:
+  - format: binary
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
